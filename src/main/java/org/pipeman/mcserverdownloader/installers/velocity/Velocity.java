@@ -8,20 +8,14 @@ import org.pipeman.mcserverdownloader.util.api.VelocityAPI;
 import static org.pipeman.mcserverdownloader.util.TerminalUtil.Colors;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class Velocity {
-    private static void downloadJar() throws IOException {
-        Requests.downloadFile(
-                new URL("https://papermc.io/api/v2/projects/velocity/"), "velocity.jar", true);
-    }
-
     public static void installVelocity() throws IOException {
         VelocityConfig cfg = null;
         boolean makeStartScript = false;
         String javaPath = "";
-        String velocityVersion = "";
+        String velocityVersion;
 
         System.out.println("Choose the version to install:");
         ArrayList<String> versions = VelocityAPI.getVersions();

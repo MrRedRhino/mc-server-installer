@@ -11,4 +11,20 @@ public class StartScripts {
             myWriter.close();
         } catch (IOException ignored) {}
     }
+
+    public static void makeVanillaStartScript(String javaPath, String args, boolean headless) {
+        try {
+            FileWriter myWriter = new FileWriter("start.sh");
+            myWriter.write(javaPath + " " + args + " -jar server.jar " + (headless ? "nogui" : ""));
+            myWriter.close();
+        } catch (IOException ignored) {}
+    }
+
+    public static void makeEulaFile() {
+        try {
+            FileWriter myWriter = new FileWriter("eula.txt");
+            myWriter.write("eula=true");
+            myWriter.close();
+        } catch (IOException ignored) {}
+    }
 }
