@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class VelocityAPI {
+public class PaperMCAPI {
     public static ArrayList<String> getVersions() throws IOException {
-        JSONObject result = new JSONObject(Requests.get("https://papermc.io/api/v2/projects/velocity"));
+        JSONObject result = new JSONObject(Requests.get("https://papermc.io/api/v2/projects/paper"));
         JSONArray versions = new JSONArray(result.getJSONArray("versions"));
         ArrayList<String> out = new ArrayList<>();
         for (int i = 0; i < versions.length(); i++) {
@@ -19,9 +19,9 @@ public class VelocityAPI {
     }
 
     public static URL getDownloadURL(String version) throws IOException {
-        String r = Requests.get("https://papermc.io/api/v2/projects/velocity/versions/" + version);
+        String r = Requests.get("https://papermc.io/api/v2/projects/paper/versions/" + version);
 
-        JSONObject o = new JSONObject(r); // TODO merge VelocityAPI into PaperMCAPI
+        JSONObject o = new JSONObject(r);
         JSONArray builds = o.getJSONArray("builds");
         int latestBuild = 0;
         for (int i = 0; i < builds.length(); i++) {
@@ -29,8 +29,9 @@ public class VelocityAPI {
                 latestBuild = builds.getInt(i);
             }
         }
-        return new URL("https://papermc.io/api/v2/projects/velocity/versions/"
+
+        return new URL("https://papermc.io/api/v2/projects/paper/versions/"
                 + version + "/builds/" + latestBuild
-                + "/downloads/velocity-" + version + "-" + latestBuild + ".jar");
+                + "/downloads/paper-" + version + "-" + latestBuild + ".jar");
     }
 }
