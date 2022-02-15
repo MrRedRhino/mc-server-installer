@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class VelocityConfig {
     public int slotCount = 100;
-    public String key;
+    public final String key;
 
     public void writeConfig() {
         try {

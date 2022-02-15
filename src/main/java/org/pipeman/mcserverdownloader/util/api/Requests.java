@@ -3,6 +3,9 @@ package org.pipeman.mcserverdownloader.util.api;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Requests {
     public static String get(String url) throws IOException {
@@ -25,6 +28,10 @@ public class Requests {
     public static void downloadFile(URL url,String filename, boolean verbose) throws IOException {
         HttpURLConnection httpConnection = (HttpURLConnection) (url.openConnection());
         long fileSize = httpConnection.getContentLength();
+
+        Path path = Paths.get(filename);
+        Files.createDirectories(path.getParent());
+
         FileOutputStream fileOutputStream = new FileOutputStream(filename);
         InputStream is = url.openStream();
 

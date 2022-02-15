@@ -1,6 +1,7 @@
 package org.pipeman.mcserverdownloader.installers.velocity;
 
-import org.pipeman.mcserverdownloader.util.StartScripts;
+import com.sun.xml.internal.xsom.impl.Ref;
+import org.pipeman.mcserverdownloader.util.Files;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
 import org.pipeman.mcserverdownloader.util.api.Requests;
 import org.pipeman.mcserverdownloader.util.api.VelocityAPI;
@@ -18,19 +19,9 @@ public class Velocity {
         String velocityVersion;
 
         System.out.println("Choose the version to install:");
+        System.out.print("Getting available versions...\r");
         ArrayList<String> versions = VelocityAPI.getVersions();
-        int i = 0;
-        for (String v : versions) {
-            i++;
-            System.out.println("  " + i + ": " + v);
-        }
-        System.out.print("> ");
-
-        int sel = 0;
-        while (sel < 1 || sel > versions.size()) {
-            sel = TerminalUtil.readInt();
-        }
-        velocityVersion = versions.get(sel - 1);
+        velocityVersion = versions.get(TerminalUtil.readRange(versions));
 
         System.out.print("Create a ready-to-use velocity.toml file? (y/n) ");
         if (TerminalUtil.readYesNo()) {
@@ -68,7 +59,7 @@ public class Velocity {
                 }
 
                 if (makeStartScript) {
-                    StartScripts.makeVelocityStartScript(javaPath);
+                    Files.makeVelocityStartScript(javaPath);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
