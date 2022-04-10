@@ -2,36 +2,49 @@ package org.pipeman.mcserverdownloader.util.api;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.pipeman.mcserverdownloader.installer.MCVersion;
+import org.pipeman.mcserverdownloader.Requests;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class VanillaAPI {
-    public static ArrayList<MCVersion> getVersions() throws IOException {
-        JSONObject launcherMeta = new JSONObject(
-                Requests.get("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"));
-        JSONArray allVersions = launcherMeta.getJSONArray("versions");
-        ArrayList<MCVersion> filteredVersions = new ArrayList<>();
+public class VanillaAPI implements IApi {
+    private final HashMap<String, String> versions = new HashMap<>();
 
-        for (int i = 0; i < allVersions.length(); i++) {
-            JSONObject version = allVersions.getJSONObject(i);
-            if (version.getString("type").equals("release")) {
-                filteredVersions.add(new MCVersion(version.getString("url"), version.getString("id")));
-                if (version.getString("id").equals("1.8.9")) {
-                    break;
+    public ArrayList<String> getVersions() {
+        try {
+            JSONArray allVersions =
+                    new JSONObject(Requests.get("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"))
+                            .getJSONArray("versions");
+
+            ArrayList<String> out = new ArrayList<>();
+
+            for (Object obj : allVersions) {
+                JSONObject version = new JSONObject(obj.toString());
+
+                if (version.getString("type").equals("release")) {
+                    versions.put(version.getString("id"), version.getString("url"));
+                    out.add(version.getString("id"));
+                    if (version.getString("id").equals("1.8.9")) {
+                        break;
+                    }
                 }
             }
+
+            return out;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return filteredVersions;
     }
 
-    public static URL getDownloadURL(MCVersion v) throws IOException {
-        String r = Requests.get(v.url);
-
-        JSONObject o = new JSONObject(r);
-        return new URL(o.getJSONObject("downloads").getJSONObject("server").getString("url"));
+    @Override
+    public URL getDownloadURL(String version) {
+        try {
+            return new URL(new JSONObject(Requests.get(versions.get(version)))
+                    .getJSONObject("downloads").getJSONObject("server").getString("url"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

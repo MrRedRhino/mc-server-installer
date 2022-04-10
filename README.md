@@ -8,9 +8,13 @@ This tool downloads server-jars, creates configs and start-scripts.
  - Velocity-proxy
  - Paper
  - Vanilla
+ - Purpur
+ - Fabric
  ---
 ### Coming soon:
- - Fabric
- - Forge
- - Pufferfish
- - Purpur
+ - Forge (maybe, they don't have a download API)
+ - Pufferfish (maybe, they don't have a download API)
+
+
+ - Aikair-Flags
+ - More config settings

@@ -1,12 +1,14 @@
 package org.pipeman.mcserverdownloader.util;
 
+
 public enum ServerType {
-    FABRIC(""),
+    FABRIC("fabric_server.jar"),
     FORGE(""),
     PAPER("paper.jar"),
     PUFFERFISH(""),
-    PURPUR(""),
-    VANILLA("server.jar");
+    PURPUR("purpur.jar"),
+    VANILLA("server.jar"),
+    VELOCITY("velocity.jar");
 
     ServerType(String executableJarName) {
         this.executableJarName = executableJarName;

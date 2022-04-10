@@ -12,10 +12,11 @@ public class Main {
         System.out.println("Which serversoftware should be installed?");
         System.out.println("  1: Vanilla (1.8.9+)");
         System.out.println("  2: Paper (1.8+)");
-        System.out.println("  3: Velocity-proxy (full support of this programm 1.13+)");
-        // TODO Fabric, Forge, Pufferfish, Purpur
+        System.out.println("  3: Fabric (1.8.9+)");
+        System.out.println("  4: Velocity-proxy (full support by this programm 1.13+)");
+        // TODO Forge, Pufferfisch
 
-        int sel = TerminalUtil.readRange(1, 3);
+        int sel = TerminalUtil.readRange(1, 4);
 
         switch (sel) {
             case 1: {
@@ -27,6 +28,10 @@ public class Main {
                 break;
             }
             case 3: {
+                ServerInstaller.installServer(ServerType.FABRIC);
+                break;
+            }
+            case 4: {
                 Velocity.installVelocity();
             }
         }

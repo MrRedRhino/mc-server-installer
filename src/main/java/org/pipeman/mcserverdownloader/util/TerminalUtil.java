@@ -1,14 +1,17 @@
 package org.pipeman.mcserverdownloader.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Scanner;
+
+import static java.lang.System.in;
 
 public class TerminalUtil {
     public static String readLine() {
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(System.in));
+                new InputStreamReader(in));
         try {
             return reader.readLine();
         } catch (IOException e) {
@@ -23,7 +26,7 @@ public class TerminalUtil {
             if (l == null) continue;
 
             if (l.equalsIgnoreCase("y")) {
-                return true;
+           return true;
             } else if (l.equalsIgnoreCase("n")) {
                 return false;
             }
@@ -55,6 +58,18 @@ public class TerminalUtil {
                 return Integer.parseInt(l);
             } catch (Exception ignored) {}
         }
+    }
+
+    public static File readJavaPath() throws IOException, InterruptedException {
+        String input = readLine();
+        if (input != null) {
+            File file = Paths.get(input).toAbsolutePath().toFile();
+            ProcessBuilder pBuilder = new ProcessBuilder(file.toString(), "-version");
+            Process p = pBuilder.start();
+            p.waitFor();
+            System.out.println(p.exitValue());
+        }
+        return null;
     }
 
     public static class Colors {

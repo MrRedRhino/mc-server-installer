@@ -1,9 +1,12 @@
 package org.pipeman.mcserverdownloader.installers.velocity;
 
-import com.sun.xml.internal.xsom.impl.Ref;
+import org.pipeman.mcserverdownloader.installer.ServerInstaller;
 import org.pipeman.mcserverdownloader.util.Files;
+import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
-import org.pipeman.mcserverdownloader.util.api.Requests;
+import org.pipeman.mcserverdownloader.Requests;
+import org.pipeman.mcserverdownloader.util.api.ApiManager;
+import org.pipeman.mcserverdownloader.util.api.IApi;
 import org.pipeman.mcserverdownloader.util.api.VelocityAPI;
 
 import static org.pipeman.mcserverdownloader.util.TerminalUtil.Colors;
@@ -17,11 +20,13 @@ public class Velocity {
         boolean makeStartScript = false;
         String javaPath = "";
         String velocityVersion;
+        IApi api = ApiManager.createNewApiInstance(ServerType.VELOCITY);
+        assert api != null;
 
         System.out.println("Choose the version to install:");
         System.out.print("Getting available versions...\r");
-        ArrayList<String> versions = VelocityAPI.getVersions();
-        velocityVersion = versions.get(TerminalUtil.readRange(versions));
+        ArrayList<String> versions = api.getVersions();
+        velocityVersion = versions.get(TerminalUtil.readRange(versions) - 1);
 
         System.out.print("Create a ready-to-use velocity.toml file? (y/n) ");
         if (TerminalUtil.readYesNo()) {
@@ -52,7 +57,10 @@ public class Velocity {
 
         if (TerminalUtil.readYesNo()) {
             try {
-                Requests.downloadFile(VelocityAPI.getDownloadURL(velocityVersion), "velocity.jar", true);
+                Requests.downloadFile(api.getDownloadURL(velocityVersion),
+                        System.getProperty("user.dir") + "/" + ServerType.VELOCITY.executableJarName,
+                        true);
+
                 System.out.println("Download done.");
                 if (cfg != null) {
                     cfg.writeConfig();
@@ -61,6 +69,8 @@ public class Velocity {
                 if (makeStartScript) {
                     Files.makeVelocityStartScript(javaPath);
                 }
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

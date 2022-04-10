@@ -1,4 +1,4 @@
-package org.pipeman.mcserverdownloader.util.api;
+package org.pipeman.mcserverdownloader;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -28,6 +28,7 @@ public class Requests {
     public static void downloadFile(URL url,String filename, boolean verbose) throws IOException {
         HttpURLConnection httpConnection = (HttpURLConnection) (url.openConnection());
         long fileSize = httpConnection.getContentLength();
+        boolean hasAlreadySentThatFileSizeIsInvalid = false;
 
         Path path = Paths.get(filename);
         Files.createDirectories(path.getParent());
@@ -43,14 +44,22 @@ public class Requests {
         while ((nRead = is.read(data, 0, data.length)) != -1) {
             bytes += nRead;
             fileOutputStream.write(data, 0, nRead);
-            if (counter++ >= 10 && verbose) {
-                int progress = (int) ((bytes / fileSize) * 10);
-                String msg = "Downloading server.jar [" +
-                        repeatString(progress, "=") +
-                        repeatString(10 - progress, "-") +
-                        "] " + progress * 10 + "%\r";
-                System.out.print(msg);
-                counter = 0;
+
+            if (fileSize < 1) {
+                if (!hasAlreadySentThatFileSizeIsInvalid) {
+                    System.out.print("Downloading server.jar; Content length invalid.\r");
+                    hasAlreadySentThatFileSizeIsInvalid = true;
+                }
+            } else {
+                if (counter++ >= 10 && verbose) {
+                    int progress = (int) ((bytes / fileSize) * 10);
+                    String msg = "Downloading server.jar [" +
+                            repeatString(progress, "=") +
+                            repeatString(10 - progress, "-") +
+                            "] " + progress * 10 + "%\r";
+                    System.out.print(msg);
+                    counter = 0;
+                }
             }
         }
         fileOutputStream.close();
