@@ -5,22 +5,29 @@ import org.pipeman.mcserverdownloader.installers.velocity.Velocity;
 import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
 
-import java.io.IOException;
-
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+
+//        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+//        URL u = loader.getResource("standard-velocity-config.toml");
+//        if (u == null) return;
+//        System.out.println(Files.readAllLines(Paths.get(u.toURI())));
+
+//        System.exit(0);
+
         System.out.println("Which serversoftware should be installed?");
-        System.out.println("  1: Vanilla (1.8.9+)");
-        System.out.println("  2: Paper (1.8+)");
-        System.out.println("  3: Fabric (1.8.9+)");
-        System.out.println("  4: Velocity-proxy (full support by this programm 1.13+)");
+        System.out.println("  1: Fabric (1.14+)");
+        System.out.println("  2: Paper (1.8.8+)");
+        System.out.println("  3: Purpur (1.14.1+)");
+        System.out.println("  4: Vanilla (1.8.9+)");
+        System.out.println("  5: Velocity-proxy (Full support by this programm 1.13+)");
         // TODO Forge, Pufferfisch
 
-        int sel = TerminalUtil.readRange(1, 4);
+        int sel = TerminalUtil.readRange(1, 5);
 
         switch (sel) {
             case 1: {
-                ServerInstaller.installServer(ServerType.VANILLA);
+                ServerInstaller.installServer(ServerType.FABRIC);
                 break;
             }
             case 2: {
@@ -28,11 +35,16 @@ public class Main {
                 break;
             }
             case 3: {
-                ServerInstaller.installServer(ServerType.FABRIC);
+                ServerInstaller.installServer(ServerType.PURPUR);
                 break;
             }
             case 4: {
-                Velocity.installVelocity();
+                ServerInstaller.installServer(ServerType.VANILLA);
+                break;
+            }
+            case 5: {
+                ServerInstaller.installServer(ServerType.VELOCITY);
+                break;
             }
         }
     }

@@ -1,10 +1,8 @@
 package org.pipeman.mcserverdownloader.util;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
 import static java.lang.System.in;
 
@@ -26,7 +24,7 @@ public class TerminalUtil {
             if (l == null) continue;
 
             if (l.equalsIgnoreCase("y")) {
-           return true;
+                return true;
             } else if (l.equalsIgnoreCase("n")) {
                 return false;
             }
@@ -78,7 +76,7 @@ public class TerminalUtil {
         public static final String CYAN = "\033[96m";
         public static final String GREEN = "\033[92m";
         public static final String WARNING = "\033[93m";
-        public static final String FAIL = "\033[91m";
+        public static final String RED = "\033[91m";
         public static final String RESET = "\033[0m";
         public static final String BOLD = "\033[1m";
         public static final String UNDERLINE = "\033[4m";

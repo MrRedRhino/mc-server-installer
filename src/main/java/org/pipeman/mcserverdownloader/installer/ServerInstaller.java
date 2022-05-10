@@ -7,21 +7,16 @@ import org.pipeman.mcserverdownloader.util.api.ApiManager;
 import org.pipeman.mcserverdownloader.util.api.IApi;
 import org.pipeman.mcserverdownloader.Requests;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 
 public class ServerInstaller {
-    public static void installServer(ServerType serverType) throws IOException {
-        if (serverType == ServerType.VELOCITY) {
-            System.out.println("Velocity is not supported yet.");
-            return;
-        }
-
+    public static void installServer(ServerType serverType) {
         InstallerSettings settings = new InstallerSettings();
 
         IApi api = ApiManager.createNewApiInstance(serverType);
         if (api == null) {
-            System.out.println(serverType.toString().toLowerCase() + " is not supported yet.");
+            System.out.println("... How");
             return;
         }
 
@@ -31,60 +26,99 @@ public class ServerInstaller {
         ArrayList<String> versions = api.getVersions();
         settings.version = versions.get(TerminalUtil.readRange(versions) - 1);
 
-        // Manage install directory
-//        System.out.print("Enter the directory to install the server in "
-//                + "or \".\" to install it in the directory this script runs in\n> ");
-//        settings.installDirectory = TerminalUtil.readLine();
-//        if (settings.installDirectory == null || settings.installDirectory.equals(".")) {
-//            settings.installDirectory = System.getProperty("user.dir") + "/";
-//        }
-//        if (!settings.installDirectory.endsWith("/")) {
-//            settings.installDirectory += "/";
-//        }
+        settings.installDirectory = getInstallDir(serverType != ServerType.VELOCITY);
 
-        settings.installDirectory = System.getProperty("user.dir") + "/";
-
-        System.out.println("Do you agree to Mojang's eula (https://account.mojang.com/documents/minecraft_eula)?");
-        System.out.print("If not, you will have to agree after the first launch of the server. (y/n) ");
-        settings.eula = TerminalUtil.readYesNo();
-
+        if (serverType != ServerType.VELOCITY) {
+            System.out.println("Do you agree to Mojang's eula? (https://account.mojang.com/documents/minecraft_eula)");
+            System.out.print("If not, you will have to agree after the first launch of the server. (y/n) ");
+            settings.eula = TerminalUtil.readYesNo();
+        }
 
         System.out.print("Create start.sh file? (y/n) ");
         if (TerminalUtil.readYesNo()) {
-            settings.startScriptContent = "";
-            System.out.print("Start.sh: Enter the path to your java installation: ");
-            settings.startScriptContent += TerminalUtil.readLine();
+            settings.startScriptContent = "cd \"${0%/*}\"\n";
+            System.out.print("Start.sh: Enter the command to start your Java VM (Leave empty to use 'java'): ");
+            String line = TerminalUtil.readLine();
+            settings.startScriptContent +=
+                    (line == null || line.isEmpty() ? "java" : line) + " -jar " + serverType.executableJarName;
+
             // TODO Fancy RAM options
-            System.out.print("Start.sh: Should the server start headless? (y/n) ");
-            settings.startScriptContent
-                    += " -jar " + serverType.executableJarName + (TerminalUtil.readYesNo() ? " nogui" : "");
+            if (serverType != ServerType.VELOCITY) {
+                System.out.print("Start.sh: Should the server start headless? (y/n) ");
+                settings.startScriptContent += TerminalUtil.readYesNo() ? " nogui" : "";
+            }
         }
+
+        // TODO velocity and normal server settings
+
+
         System.out.println(settings.generateSummary(serverType));
         System.out.print("Install? (y/n) ");
         if (TerminalUtil.readYesNo()) {
             try {
-
-                // Download server jars
+                // Download server jar
                 Requests.downloadFile(api.getDownloadURL(settings.version),
-                        settings.installDirectory + serverType.executableJarName, true);
-                System.out.println("Download done.");
+                        settings.installDirectory + serverType.executableJarName, serverType.executableJarName, true);
+                System.out.println();
 
                 // create eula file
                 if (settings.eula) {
-                    Files.makeFile("eula.txt", "eula=true");
+                    Files.makeFile(settings.installDirectory + "eula.txt", "eula=true");
                 }
 
                 // generate start script
                 if (settings.startScriptContent != null) {
-                    Files.makeFile("start.sh", settings.startScriptContent);
+                    Files.makeFile(settings.installDirectory + "start.sh", settings.startScriptContent);
                 }
             } catch (Exception e) {
+                System.out.println(TerminalUtil.Colors.RED + TerminalUtil.Colors.BOLD + "Installation failed:");
+                System.out.print(TerminalUtil.Colors.RESET);
                 e.printStackTrace();
+                return;
             }
 
             System.out.println(TerminalUtil.Colors.GREEN + TerminalUtil.Colors.BOLD + "Installation done!");
         } else {
             System.out.println(TerminalUtil.Colors.WARNING + "Aborting.");
         }
+    }
+
+    private static String getInstallDir(boolean isServer) {
+        String out = "";
+        boolean isCorrect = false;
+        while (!isCorrect) {
+            System.out.print("Enter the directory to install the " + (isServer ? "server in. " : "proxy in. ") +
+                    "\nLeave empty to use the directory this program runs in.\n> ");
+
+            String line = TerminalUtil.readLine();
+            if (line == null || line.isEmpty() || line.equals(".")) {
+                line = System.getProperty("user.dir");
+            }
+
+            out = new File(line).getAbsoluteFile().getPath() + "/";
+
+            File dir = new File(out);
+            if (!dir.exists()) {
+                System.out.print(out + " does not exist. Create missing directories? (y/n) ");
+                if (TerminalUtil.readYesNo()) {
+                    if (!dir.mkdirs()) {
+                        System.out.println("Creating the directories failed. Choose a different path.");
+                    } else {
+                        isCorrect = true;
+                    }
+                }
+            } else if (dir.isFile()) {
+                System.out.println("This is a file!");
+            } else {
+                File[] files = dir.listFiles(File::isFile);
+                if (files != null && files.length > 0) {
+                    System.out.print("The directory is not empty. Continue anyway? (y/n) ");
+                    isCorrect = TerminalUtil.readYesNo();
+                } else {
+                    isCorrect = true;
+                }
+            }
+        }
+        return out;
     }
 }

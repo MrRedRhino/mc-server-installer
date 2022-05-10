@@ -1,21 +1,18 @@
 package org.pipeman.mcserverdownloader.installers.velocity;
 
-import org.pipeman.mcserverdownloader.installer.ServerInstaller;
 import org.pipeman.mcserverdownloader.util.Files;
 import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
 import org.pipeman.mcserverdownloader.Requests;
 import org.pipeman.mcserverdownloader.util.api.ApiManager;
 import org.pipeman.mcserverdownloader.util.api.IApi;
-import org.pipeman.mcserverdownloader.util.api.VelocityAPI;
 
 import static org.pipeman.mcserverdownloader.util.TerminalUtil.Colors;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Velocity {
-    public static void installVelocity() throws IOException {
+    public static void installVelocity() {
         VelocityConfig cfg = null;
         boolean makeStartScript = false;
         String javaPath = "";
@@ -59,7 +56,7 @@ public class Velocity {
             try {
                 Requests.downloadFile(api.getDownloadURL(velocityVersion),
                         System.getProperty("user.dir") + "/" + ServerType.VELOCITY.executableJarName,
-                        true);
+                        ServerType.VELOCITY.executableJarName, true);
 
                 System.out.println("Download done.");
                 if (cfg != null) {
