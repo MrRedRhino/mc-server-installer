@@ -4,6 +4,7 @@ import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.Files;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
 import org.pipeman.mcserverdownloader.util.api.ApiManager;
+import org.pipeman.mcserverdownloader.util.api.DownloadInfo;
 import org.pipeman.mcserverdownloader.util.api.IApi;
 import org.pipeman.mcserverdownloader.Requests;
 
@@ -39,26 +40,25 @@ public class ServerInstaller {
             settings.startScriptContent = "cd \"${0%/*}\"\n";
             System.out.print("Start.sh: Enter the command to start your Java VM (Leave empty to use 'java'): ");
             String line = TerminalUtil.readLine();
-            settings.startScriptContent +=
-                    (line == null || line.isEmpty() ? "java" : line) + " -jar " + serverType.executableJarName;
+            settings.startScriptContent += (line == null || line.isEmpty() ? "java" : line) + " -jar ";
 
             // TODO Fancy RAM options
             if (serverType != ServerType.VELOCITY) {
                 System.out.print("Start.sh: Should the server start headless? (y/n) ");
-                settings.startScriptContent += TerminalUtil.readYesNo() ? " nogui" : "";
+                settings.noGui = TerminalUtil.readYesNo();
             }
         }
 
         // TODO velocity and normal server settings
-
 
         System.out.println(settings.generateSummary(serverType));
         System.out.print("Install? (y/n) ");
         if (TerminalUtil.readYesNo()) {
             try {
                 // Download server jar
-                Requests.downloadFile(api.getDownloadURL(settings.version),
-                        settings.installDirectory + serverType.executableJarName, serverType.executableJarName, true);
+                DownloadInfo dlInfo = api.getDownloadInfo(settings.version);
+                Requests.downloadFile(dlInfo.download(), settings.installDirectory + dlInfo.fileName(),
+                        dlInfo.fileName(), true);
                 System.out.println();
 
                 // create eula file
@@ -68,7 +68,8 @@ public class ServerInstaller {
 
                 // generate start script
                 if (settings.startScriptContent != null) {
-                    Files.makeFile(settings.installDirectory + "start.sh", settings.startScriptContent);
+                    Files.makeFile(settings.installDirectory + "start.sh",
+                            settings.startScriptContent + dlInfo.fileName() + (settings.noGui ? " nogui" : ""));
                 }
             } catch (Exception e) {
                 System.out.println(TerminalUtil.Colors.RED + TerminalUtil.Colors.BOLD + "Installation failed:");

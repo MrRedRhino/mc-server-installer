@@ -38,10 +38,13 @@ public class VanillaAPI implements IApi {
     }
 
     @Override
-    public URL getDownloadURL(String version) {
+    public DownloadInfo getDownloadInfo(String version) {
         try {
-            return new URL(new JSONObject(Requests.get(versions.get(version)))
+            URL download = new URL(new JSONObject(Requests.get(versions.get(version)))
                     .getJSONObject("downloads").getJSONObject("server").getString("url"));
+
+            return new DownloadInfo(download, "vanilla-" + version + ".jar");
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,18 +1,13 @@
 package org.pipeman.mcserverdownloader;
 
 import org.pipeman.mcserverdownloader.installer.ServerInstaller;
-import org.pipeman.mcserverdownloader.installers.velocity.Velocity;
 import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
 
 public class Main {
     public static void main(String[] args) {
 
-//        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-//        URL u = loader.getResource("standard-velocity-config.toml");
-//        if (u == null) return;
-//        System.out.println(Files.readAllLines(Paths.get(u.toURI())));
-
+//        Inspector.inspectFolder(new File("test-server"));
 //        System.exit(0);
 
         System.out.println("Which serversoftware should be installed?");

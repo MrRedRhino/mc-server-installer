@@ -28,7 +28,7 @@ public class FabricAPI implements IApi {
     }
 
     @Override
-    public URL getDownloadURL(String version) {
+    public DownloadInfo getDownloadInfo(String version) {
         try {
             JSONArray installers = new JSONArray(Requests.get("https://meta.fabricmc.net/v2/versions/installer"));
             String installerVersion = installers.getJSONObject(0).getString("version");
@@ -36,11 +36,12 @@ public class FabricAPI implements IApi {
             JSONArray loaders = new JSONArray(Requests.get("https://meta.fabricmc.net/v2/versions/loader/" + version));
             String loaderVersion = ((JSONObject) loaders.get(0)).getJSONObject("loader").getString("version");
 
-            return new URL("https://meta.fabricmc.net/v2/versions/loader/"
-                    + version + "/" + loaderVersion + "/" + installerVersion + "/server/jar");
+            return new DownloadInfo(new URL("https://meta.fabricmc.net/v2/versions/loader/"
+                    + version + "/" + loaderVersion + "/" + installerVersion + "/server/jar"),
+                    "fabric-" + version + "-" + loaderVersion + ".jar");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    } // 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
+    }
 }

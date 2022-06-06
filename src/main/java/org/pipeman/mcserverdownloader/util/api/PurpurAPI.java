@@ -24,9 +24,10 @@ public class PurpurAPI implements IApi {
     }
 
     @Override
-    public URL getDownloadURL(String version) {
+    public DownloadInfo getDownloadInfo(String version) {
         try {
-            return new URL("https://api.purpurmc.org/v2/purpur/" + version + "/latest/download");
+            return new DownloadInfo(new URL("https://api.purpurmc.org/v2/purpur/" + version + "/latest/download"),
+                    "purpur-" + version + ".jar");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

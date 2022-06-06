@@ -24,14 +24,15 @@ public class PaperMCAPI implements IApi {
     }
 
     @Override
-    public URL getDownloadURL(String version) {
+    public DownloadInfo getDownloadInfo(String version) {
         try {
             String r = Requests.get("https://papermc.io/api/v2/projects/paper/versions/" + version);
 
             int latestBuild = getLatestBuild(new JSONObject(r).getJSONArray("builds"));
 
-            return new URL("https://papermc.io/api/v2/projects/paper/versions/"
-                    + version + "/builds/" + latestBuild + "/downloads/paper-" + version + "-" + latestBuild + ".jar");
+            return new DownloadInfo(new URL("https://papermc.io/api/v2/projects/paper/versions/"
+                    + version + "/builds/" + latestBuild + "/downloads/paper-" + version + "-" + latestBuild + ".jar"),
+                    "paper-" + version + "-" + latestBuild + ".jar");
 
         } catch (Exception e) {
             throw new RuntimeException(e);

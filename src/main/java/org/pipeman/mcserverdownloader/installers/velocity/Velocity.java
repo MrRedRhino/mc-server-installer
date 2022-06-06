@@ -11,6 +11,7 @@ import static org.pipeman.mcserverdownloader.util.TerminalUtil.Colors;
 
 import java.util.ArrayList;
 
+@Deprecated
 public class Velocity {
     public static void installVelocity() {
         VelocityConfig cfg = null;
@@ -54,9 +55,9 @@ public class Velocity {
 
         if (TerminalUtil.readYesNo()) {
             try {
-                Requests.downloadFile(api.getDownloadURL(velocityVersion),
-                        System.getProperty("user.dir") + "/" + ServerType.VELOCITY.executableJarName,
-                        ServerType.VELOCITY.executableJarName, true);
+//                Requests.downloadFile(api.getDownloadInfo(velocityVersion),
+//                        System.getProperty("user.dir") + "/" + ServerType.VELOCITY.executableJarName,
+//                        ServerType.VELOCITY.executableJarName, true);
 
                 System.out.println("Download done.");
                 if (cfg != null) {
