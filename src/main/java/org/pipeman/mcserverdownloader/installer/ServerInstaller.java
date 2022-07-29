@@ -57,7 +57,7 @@ public class ServerInstaller {
             try {
                 // Download server jar
                 DownloadInfo dlInfo = api.getDownloadInfo(settings.version);
-                Requests.downloadFile(dlInfo.download(), settings.installDirectory + dlInfo.fileName(),
+                Requests.downloadFile(dlInfo.url(), settings.installDirectory + dlInfo.fileName(),
                         dlInfo.fileName(), true);
                 System.out.println();
 
