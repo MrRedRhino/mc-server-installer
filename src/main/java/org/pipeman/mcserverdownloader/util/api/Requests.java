@@ -1,4 +1,4 @@
-package org.pipeman.mcserverdownloader;
+package org.pipeman.mcserverdownloader.util.api;
 
 import java.io.*;
 import java.net.HttpURLConnection;

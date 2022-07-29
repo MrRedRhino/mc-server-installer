@@ -3,8 +3,6 @@ package org.pipeman.mcserverdownloader.installers.velocity;
 import org.pipeman.mcserverdownloader.util.Files;
 import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
-import org.pipeman.mcserverdownloader.Requests;
-import org.pipeman.mcserverdownloader.util.api.ApiManager;
 import org.pipeman.mcserverdownloader.util.api.IApi;
 
 import static org.pipeman.mcserverdownloader.util.TerminalUtil.Colors;
@@ -18,7 +16,7 @@ public class Velocity {
         boolean makeStartScript = false;
         String javaPath = "";
         String velocityVersion;
-        IApi api = ApiManager.createNewApiInstance(ServerType.VELOCITY);
+        IApi api = IApi.of(ServerType.VELOCITY);
         assert api != null;
 
         System.out.println("Choose the version to install:");

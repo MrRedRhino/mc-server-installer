@@ -3,10 +3,9 @@ package org.pipeman.mcserverdownloader.installer;
 import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.Files;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
-import org.pipeman.mcserverdownloader.util.api.ApiManager;
 import org.pipeman.mcserverdownloader.util.api.DownloadInfo;
 import org.pipeman.mcserverdownloader.util.api.IApi;
-import org.pipeman.mcserverdownloader.Requests;
+import org.pipeman.mcserverdownloader.util.api.Requests;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class ServerInstaller {
     public static void installServer(ServerType serverType) {
         InstallerSettings settings = new InstallerSettings();
 
-        IApi api = ApiManager.createNewApiInstance(serverType);
+        IApi api = IApi.of(serverType);
         if (api == null) {
             System.out.println("... How");
             return;
