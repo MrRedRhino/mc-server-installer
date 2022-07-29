@@ -1,8 +1,12 @@
 package org.pipeman.mcserverdownloader.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.lang.System.in;
 
@@ -48,6 +52,14 @@ public class TerminalUtil {
         return readRange(1, a.size());
     }
 
+    public static int readRange(List<?> a, Consumer<Object> print) {
+        for (int i = 0; i < a.size(); i++) {
+            System.out.print("  " + (i + 1) + ": ");
+            print.accept(a.get(i));
+        }
+        return readRange(1, a.size());
+    }
+
     public static int readInt() {
         while (true) {
             System.out.print("> ");
@@ -56,7 +68,8 @@ public class TerminalUtil {
 
             try {
                 return Integer.parseInt(l);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
