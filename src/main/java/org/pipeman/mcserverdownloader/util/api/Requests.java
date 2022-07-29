@@ -13,8 +13,8 @@ public class Requests {
 
         HttpURLConnection httpConnection = (HttpURLConnection) (urlAsUrl.openConnection());
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(httpConnection.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+
         String inputLine;
         StringBuilder content = new StringBuilder();
         while ((inputLine = in.readLine()) != null) {
