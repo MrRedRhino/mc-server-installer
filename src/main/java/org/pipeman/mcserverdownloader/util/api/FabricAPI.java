@@ -2,7 +2,6 @@ package org.pipeman.mcserverdownloader.util.api;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.pipeman.mcserverdownloader.Requests;
 
 import java.net.URL;
 import java.util.ArrayList;
