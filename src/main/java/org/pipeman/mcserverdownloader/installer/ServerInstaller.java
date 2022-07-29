@@ -24,6 +24,7 @@ public class ServerInstaller {
         System.out.print(TerminalUtil.Colors.GREEN + "Fetching available versions..." + TerminalUtil.Colors.RESET + "\r");
 
         ArrayList<String> versions = api.getVersions();
+        System.out.print("                                   \r");
         settings.version = versions.get(TerminalUtil.readRange(versions) - 1);
 
         settings.installDirectory = getInstallDir(serverType != ServerType.VELOCITY);

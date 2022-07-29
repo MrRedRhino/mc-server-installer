@@ -42,5 +42,7 @@ public class Main {
                 break;
             }
         }
+
+        System.out.print(TerminalUtil.Colors.RESET);
     }
 }
