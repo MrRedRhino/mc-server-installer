@@ -20,8 +20,9 @@ public class Velocity {
         assert api != null;
 
         System.out.println("Choose the version to install:");
-        System.out.print("Getting available versions...\r");
+        System.out.print("Fetching available versions...\r");
         ArrayList<String> versions = api.getVersions();
+        System.out.print("                                   \r");
         velocityVersion = versions.get(TerminalUtil.readRange(versions) - 1);
 
         System.out.print("Create a ready-to-use velocity.toml file? (y/n) ");
