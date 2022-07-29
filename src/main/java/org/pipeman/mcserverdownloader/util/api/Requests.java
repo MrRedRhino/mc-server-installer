@@ -1,6 +1,13 @@
 package org.pipeman.mcserverdownloader.util.api;
 
-import java.io.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
@@ -8,21 +15,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Requests {
+    static OkHttpClient client = new OkHttpClient();
+
     public static String get(String url) throws IOException {
-        URL urlAsUrl = new URL(url);
+        Request r = new Request.Builder()
+                .url(new URL(url))
+                .build();
 
-        HttpURLConnection httpConnection = (HttpURLConnection) (urlAsUrl.openConnection());
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-
-        String inputLine;
-        StringBuilder content = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
+        try (Response response = client.newCall(r).execute()) {
+            ResponseBody body = response.body();
+            return body == null ? "" : body.string();
         }
-        in.close();
-        httpConnection.disconnect();
-        return content.toString();
     }
 
     public static void downloadFile(URL url, String filename, String displayName, boolean verbose) throws IOException {
