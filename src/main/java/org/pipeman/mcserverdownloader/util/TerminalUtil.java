@@ -11,7 +11,9 @@ public class TerminalUtil {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(in));
         try {
-            return reader.readLine();
+            String line = reader.readLine();
+            if (line.equalsIgnoreCase("q")) System.exit(0);
+            return line;
         } catch (IOException e) {
             e.printStackTrace();
         }
