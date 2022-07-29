@@ -66,9 +66,9 @@ public class Requests {
 
     private static void sendUpdateMessage(String filename, int progress) {
         String msg = "Downloading " + filename + " [" +
-                repeatString(progress, "=") +
-                repeatString(10 - progress, "-") +
-                "] " + progress * 10 + "%\r";
+                     repeatString(progress, "=") +
+                     repeatString(10 - progress, "-") +
+                     "] " + progress * 10 + "%\r";
         System.out.print(msg);
     }
 
