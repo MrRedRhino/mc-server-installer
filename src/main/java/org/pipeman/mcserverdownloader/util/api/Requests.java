@@ -8,7 +8,6 @@ import okhttp3.ResponseBody;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,42 +28,44 @@ public class Requests {
     }
 
     public static void downloadFile(URL url, String filename, String displayName, boolean verbose) throws IOException {
-        HttpURLConnection httpConnection = (HttpURLConnection) (url.openConnection());
-        long fileSize = httpConnection.getContentLength();
-        boolean hasSentThatFileSizeIsInvalid = false;
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
 
-        Path path = Paths.get(filename);
-        Files.createDirectories(path.getParent());
+        try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
+             Response req = client.newCall(request).execute()) {
 
-        FileOutputStream fileOutputStream = new FileOutputStream(filename);
-        InputStream is = url.openStream();
+            ResponseBody body = req.body();
+            if (body == null) return;
 
-        int nRead;
-        byte[] data = new byte[16384];
-        float bytes = 0;
-        int counter = 0;
+            try (InputStream in = body.byteStream()) {
 
-        while ((nRead = is.read(data, 0, data.length)) != -1) {
-            bytes += nRead;
-            fileOutputStream.write(data, 0, nRead);
+                Path path = Paths.get(filename);
+                Files.createDirectories(path.getParent());
 
-            if (fileSize < 1) {
-                if (!hasSentThatFileSizeIsInvalid) {
-                    System.out.print("Downloading " + displayName + "; Content length invalid.\r");
-                    hasSentThatFileSizeIsInvalid = true;
+                long fileSize = body.contentLength();
+                int nRead;
+                byte[] data = new byte[16384];
+                float bytes = 0;
+                int counter = 0;
+
+                while ((nRead = in.read(data, 0, data.length)) != -1) {
+                    bytes += nRead;
+                    fileOutputStream.write(data, 0, nRead);
+
+                    if (fileSize < 1) {
+                        System.out.print("Downloading " + displayName + ". Server returned an invalid filesize.\r");
+                    } else {
+                        if (counter++ >= 10 && verbose) {
+                            int progress = (int) ((bytes / fileSize) * 10);
+                            sendUpdateMessage(displayName, progress);
+                            counter = 0;
+                        }
+                    }
                 }
-            } else {
-                if (counter++ >= 10 && verbose) {
-                    int progress = (int) ((bytes / fileSize) * 10);
-                    sendUpdateMessage(displayName, progress);
-                    counter = 0;
-                }
+                sendUpdateMessage(displayName, 10);
             }
         }
-        sendUpdateMessage(displayName, 10);
-
-        fileOutputStream.close();
-        httpConnection.disconnect();
     }
 
     private static void sendUpdateMessage(String filename, int progress) {
