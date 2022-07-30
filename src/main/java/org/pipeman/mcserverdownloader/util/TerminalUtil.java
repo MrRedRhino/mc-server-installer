@@ -46,18 +46,15 @@ public class TerminalUtil {
     }
 
     public static int readRange(List<String> a) {
-        for (int i = 0; i < a.size(); i++) {
-            System.out.println("  " + (i + 1) + ": " + a.get(i));
-        }
+        printList(a, System.out::println);
         return readRange(1, a.size());
     }
 
-    public static int readRange(List<?> a, Consumer<Object> print) {
+    public static void printList(List<?> a, Consumer<Object> print) {
         for (int i = 0; i < a.size(); i++) {
             System.out.print("  " + (i + 1) + ": ");
             print.accept(a.get(i));
         }
-        return readRange(1, a.size());
     }
 
     public static int readInt() {
@@ -83,6 +80,45 @@ public class TerminalUtil {
             System.out.println(p.exitValue());
         }
         return null;
+    }
+
+    public static String getInstallDir(String what) {
+        String out = "";
+        boolean isCorrect = false;
+        while (!isCorrect) {
+            System.out.print("Enter the directory to install the " + what + " in.\n" +
+                    "Leave empty to use the directory this program runs in.\n> ");
+
+            String line = readLine();
+            if (line == null || line.isEmpty() || line.equals(".")) {
+                line = System.getProperty("user.dir");
+            }
+
+            out = new File(line).getAbsoluteFile().getPath() + "/";
+
+            File dir = new File(out);
+            if (!dir.exists()) {
+                System.out.print(out + " does not exist. Create missing directories? (y/n) ");
+                if (readYesNo()) {
+                    if (!dir.mkdirs()) {
+                        System.out.println("Creating the directories failed. Choose a different path.");
+                    } else {
+                        isCorrect = true;
+                    }
+                }
+            } else if (dir.isFile()) {
+                System.out.println("This is a file!");
+            } else {
+                File[] files = dir.listFiles(File::isFile);
+                if (files != null && files.length > 0) {
+                    System.out.print("The directory is not empty. Continue anyway? (y/n) ");
+                    isCorrect = readYesNo();
+                } else {
+                    isCorrect = true;
+                }
+            }
+        }
+        return out;
     }
 
     public static class Colors {

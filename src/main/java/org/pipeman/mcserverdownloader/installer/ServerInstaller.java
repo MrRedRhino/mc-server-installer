@@ -7,7 +7,6 @@ import org.pipeman.mcserverdownloader.util.api.DownloadInfo;
 import org.pipeman.mcserverdownloader.util.api.IApi;
 import org.pipeman.mcserverdownloader.util.api.Requests;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class ServerInstaller {
@@ -27,7 +26,7 @@ public class ServerInstaller {
         System.out.print("                                   \r");
         settings.version = versions.get(TerminalUtil.readRange(versions) - 1);
 
-        settings.installDirectory = getInstallDir(serverType != ServerType.VELOCITY);
+        settings.installDirectory = TerminalUtil.getInstallDir(serverType == ServerType.VELOCITY ? "proxy" : "server");
 
         if (serverType != ServerType.VELOCITY) {
             System.out.println("Do you agree to Mojang's eula? (https://account.mojang.com/documents/minecraft_eula)");
@@ -82,44 +81,5 @@ public class ServerInstaller {
         } else {
             System.out.println(TerminalUtil.Colors.WARNING + "Aborting.");
         }
-    }
-
-    private static String getInstallDir(boolean isServer) {
-        String out = "";
-        boolean isCorrect = false;
-        while (!isCorrect) {
-            System.out.print("Enter the directory to install the " + (isServer ? "server in. " : "proxy in. ") +
-                    "\nLeave empty to use the directory this program runs in.\n> ");
-
-            String line = TerminalUtil.readLine();
-            if (line == null || line.isEmpty() || line.equals(".")) {
-                line = System.getProperty("user.dir");
-            }
-
-            out = new File(line).getAbsoluteFile().getPath() + "/";
-
-            File dir = new File(out);
-            if (!dir.exists()) {
-                System.out.print(out + " does not exist. Create missing directories? (y/n) ");
-                if (TerminalUtil.readYesNo()) {
-                    if (!dir.mkdirs()) {
-                        System.out.println("Creating the directories failed. Choose a different path.");
-                    } else {
-                        isCorrect = true;
-                    }
-                }
-            } else if (dir.isFile()) {
-                System.out.println("This is a file!");
-            } else {
-                File[] files = dir.listFiles(File::isFile);
-                if (files != null && files.length > 0) {
-                    System.out.print("The directory is not empty. Continue anyway? (y/n) ");
-                    isCorrect = TerminalUtil.readYesNo();
-                } else {
-                    isCorrect = true;
-                }
-            }
-        }
-        return out;
     }
 }
