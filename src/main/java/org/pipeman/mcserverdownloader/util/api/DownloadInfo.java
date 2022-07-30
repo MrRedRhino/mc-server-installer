@@ -28,8 +28,8 @@ public class DownloadInfo {
         return download;
     }
 
-    public void download() throws IOException {
-        Requests.downloadFile(url(), fileName(), fileName(), true);
+    public void download(String installDir) throws IOException {
+        Requests.downloadFile(url(), installDir + fileName(), fileName(), true);
     }
 
     public String title() {
