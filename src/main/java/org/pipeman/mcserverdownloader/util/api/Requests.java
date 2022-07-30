@@ -32,6 +32,9 @@ public class Requests {
                 .url(url)
                 .build();
 
+        Path path = Paths.get(filename);
+        Files.createDirectories(path.getParent());
+
         try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
              Response req = client.newCall(request).execute()) {
 
@@ -39,9 +42,6 @@ public class Requests {
             if (body == null) return;
 
             try (InputStream in = body.byteStream()) {
-
-                Path path = Paths.get(filename);
-                Files.createDirectories(path.getParent());
 
                 long fileSize = body.contentLength();
                 int nRead;
