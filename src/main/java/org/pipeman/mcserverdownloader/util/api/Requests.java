@@ -1,49 +1,29 @@
 package org.pipeman.mcserverdownloader.util.api;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Requests {
-    static OkHttpClient client = new OkHttpClient();
-
     public static String get(String url) throws IOException {
-        Request r = new Request.Builder()
-                .url(new URL(url))
-                .build();
-
-        try (Response response = client.newCall(r).execute()) {
-            ResponseBody body = response.body();
-            return body == null ? "" : body.string();
-        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Response.connectTo(url).transferBodyTo(out);
+        return out.toString();
     }
 
     public static void downloadFile(URL url, String filename, String displayName, boolean verbose) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        Response response = Response.connectTo(url);
 
         Path path = Paths.get(filename);
         Files.createDirectories(path.getParent());
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream(filename);
-             Response req = client.newCall(request).execute()) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(filename)) {
+            try (InputStream in = response.body()) {
+                long fileSize = response.contentLength();
 
-            ResponseBody body = req.body();
-            if (body == null) return;
-
-            try (InputStream in = body.byteStream()) {
-
-                long fileSize = body.contentLength();
                 int nRead;
                 byte[] data = new byte[16384];
                 float bytes = 0;
@@ -77,6 +57,44 @@ public class Requests {
     }
 
     private static String repeatString(int count, String with) {
-        return new String(new char[count]).replace("\0", with);
+        StringBuilder builder = new StringBuilder(with.length() * count);
+        for (int i = 0; i < count; i++) builder.append(with);
+        return builder.toString();
+    }
+
+    private static class Response {
+        private final InputStream body;
+        private final long contentLength;
+
+        private Response(InputStream body, long contentLength) {
+            this.body = body;
+            this.contentLength = contentLength;
+        }
+
+        public InputStream body() {
+            return body;
+        }
+
+        public long contentLength() {
+            return contentLength;
+        }
+
+        public static Response connectTo(String url) throws IOException {
+            return connectTo(new URL(url));
+        }
+
+        public static Response connectTo(URL url) throws IOException {
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            InputStream stream = conn.getResponseCode() > 200 ? conn.getErrorStream() : conn.getInputStream();
+            return new Response(stream, conn.getContentLengthLong());
+        }
+
+        public void transferBodyTo(OutputStream out) throws IOException {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = body.read(buffer, 0, 8192)) >= 0) {
+                out.write(buffer, 0, read);
+            }
+        }
     }
 }
