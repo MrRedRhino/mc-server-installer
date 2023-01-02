@@ -1,7 +1,9 @@
 package org.pipeman.mcserverdownloader.installer;
 
-import org.pipeman.mcserverdownloader.util.ServerType;
+import org.pipeman.mcserverdownloader.meta.ServerMeta;
+import org.pipeman.mcserverdownloader.util.AikarFlags;
 import org.pipeman.mcserverdownloader.util.Files;
+import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
 import org.pipeman.mcserverdownloader.util.api.DownloadInfo;
 import org.pipeman.mcserverdownloader.util.api.IApi;
@@ -26,7 +28,8 @@ public class ServerInstaller {
         System.out.print("                                   \r");
         settings.version = versions.get(TerminalUtil.readRange(versions) - 1);
 
-        settings.installDirectory = TerminalUtil.getInstallDir(serverType == ServerType.VELOCITY ? "proxy" : "server");
+//        settings.installDirectory = TerminalUtil.getInstallDir(serverType == ServerType.VELOCITY ? "proxy" : "server");
+//        settings.installDirectory = System.getProperty("user.dir");
 
         if (serverType != ServerType.VELOCITY) {
             System.out.println("Do you agree to Mojang's eula? (https://account.mojang.com/documents/minecraft_eula)");
@@ -41,7 +44,6 @@ public class ServerInstaller {
             String line = TerminalUtil.readLine();
             settings.startScriptContent += (line == null || line.isEmpty() ? "java" : line) + " ";
 
-            // TODO Fancy RAM options
             if (serverType != ServerType.VELOCITY) {
                 System.out.print("Start.sh: Should the server start without a gui? (y/n) ");
                 settings.noGui = TerminalUtil.readYesNo();
@@ -69,18 +71,18 @@ public class ServerInstaller {
             try {
                 // Download server jar
                 DownloadInfo dlInfo = api.getDownloadInfo(settings.version);
-                Requests.downloadFile(dlInfo.url(), settings.installDirectory + dlInfo.fileName(),
+                Requests.downloadFile(dlInfo.url(), dlInfo.fileName(),
                         dlInfo.fileName(), true);
                 System.out.println();
 
                 // create eula file
                 if (settings.eula) {
-                    Files.makeFile(settings.installDirectory + "eula.txt", "eula=true");
+                    Files.makeFile("eula.txt", "eula=true");
                 }
 
                 // generate start script
                 if (settings.startScriptContent != null) {
-                    Files.makeFile(settings.installDirectory + "start.sh",
+                    Files.makeFile("start.sh",
                             settings.startScriptContent + dlInfo.fileName() + (settings.noGui ? " nogui" : ""));
                 }
             } catch (Exception e) {
@@ -90,6 +92,7 @@ public class ServerInstaller {
                 return;
             }
 
+            new ServerMeta(serverType, settings.version).save();
             System.out.println(TerminalUtil.Colors.GREEN + TerminalUtil.Colors.BOLD + "Installation done!");
         } else {
             System.out.println(TerminalUtil.Colors.WARNING + "Aborting.");

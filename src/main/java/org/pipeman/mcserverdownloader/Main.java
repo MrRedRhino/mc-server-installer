@@ -1,82 +1,88 @@
 package org.pipeman.mcserverdownloader;
 
-import org.pipeman.mcserverdownloader.addon_search.AddonListRenderer;
-import org.pipeman.mcserverdownloader.addon_search.ModrinthImpl;
 import org.pipeman.mcserverdownloader.installer.ServerInstaller;
+import org.pipeman.mcserverdownloader.meta.ServerMeta;
+import org.pipeman.mcserverdownloader.util.Files;
 import org.pipeman.mcserverdownloader.util.ServerType;
 import org.pipeman.mcserverdownloader.util.TerminalUtil;
+import org.pipeman.mcserverdownloader.util.TerminalUtil.Colors;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.print(Colors.RESET)));
+        // new AddonListRenderer(new ModrinthImpl(), mcVersion, directory).startLoop();
 
-        System.out.print("Install (s) serversoftware or (a) addons?\n> ");
-        while (true) {
-            String line = TerminalUtil.readLine();
-            if (line.equalsIgnoreCase("s")) {
-                break;
-            } else if (line.equalsIgnoreCase("a")) {
-                doAddonChoosing();
-                System.exit(0);
+        System.out.println("This program is running in: " + System.getProperty("user.dir"));
+        String serverMetaFile = Files.readFile(new File(System.getProperty("user.dir"), "mcsi-meta.json"));
+        if (serverMetaFile.isEmpty()) {
+            System.out.println(Colors.RED + "Could not find a mcsi-meta.json file." + Colors.RESET);
+
+            List<String> options = Arrays.asList(
+                    "Restart the program in another directory",
+                    "Create a meta file",
+                    "Install a new server in this directory"
+            );
+
+            switch (TerminalUtil.readRange(options)) {
+                case 1: {
+                    System.exit(0);
+                    break;
+                }
+                case 2: {
+                    createMetaFile();
+                    break;
+                }
+                case 3: {
+                    ServerType serverType = askForServertype("Which serversoftware should be installed?");
+                    ServerInstaller.installServer(serverType);
+                    break;
+                }
             }
+        } else {
+            System.out.println("Server meta file found.");
         }
+    }
 
-        System.out.println("Which serversoftware should be installed?");
-        System.out.println("  1: Fabric (1.14+)");
-        System.out.println("  3: Paper (1.8.8+)");
-        System.out.println("  4: Purpur (1.14.1+)");
-        System.out.println("  5: Vanilla (1.8.9+)");
-        System.out.println("  6: Velocity-proxy (Full support by this programm 1.13+)");
+    private static void createMetaFile() {
+        ServerType type = askForServertype("Which server software is installed in this directory?");
+
+        System.out.print("Which minecraft version is installed?\n> ");
+        String mcVersion = TerminalUtil.readLine();
+        new ServerMeta(type, mcVersion).save();
+        System.out.println(Colors.GREEN + "Done!");
+        System.exit(0);
+    }
+
+    private static ServerType askForServertype(String prompt) {
         // TODO Forge, Pufferfisch
-
-        int sel = TerminalUtil.readRange(1, 5);
-
-        switch (sel) {
+        System.out.println(prompt);
+        ServerType serverType = null;
+        switch (TerminalUtil.readRange(Arrays.asList("Fabric", "Paper", "Purpur", "Vanilla", "Velocity-proxy"))) {
             case 1: {
-                ServerInstaller.installServer(ServerType.FABRIC);
+                serverType = ServerType.FABRIC;
                 break;
             }
             case 2: {
-                ServerInstaller.installServer(ServerType.PAPER);
+                serverType = ServerType.PAPER;
                 break;
             }
             case 3: {
-                ServerInstaller.installServer(ServerType.PURPUR);
+                serverType = ServerType.PURPUR;
                 break;
             }
             case 4: {
-                ServerInstaller.installServer(ServerType.VANILLA);
+                serverType = ServerType.VANILLA;
                 break;
             }
             case 5: {
-                ServerInstaller.installServer(ServerType.VELOCITY);
+                serverType = ServerType.VELOCITY;
                 break;
             }
         }
-
-        System.out.print(TerminalUtil.Colors.RESET);
-        System.out.print("Install addons? (y/n) ");
-        if (TerminalUtil.readYesNo()) doAddonChoosing();
-    }
-
-    public static void doAddonChoosing() throws IOException {
-        String directory = TerminalUtil.getInstallDir("addons");
-
-        System.out.print("Enter the minecraft version to search addons for: ");
-        String mcVersion = TerminalUtil.readLine();
-
-        ArrayList<String> downloads = new ArrayList<>();
-        downloads.add("Modrinth");
-
-        System.out.println("Choose an addon-website to download from: ");
-        int what = TerminalUtil.readRange(downloads);
-
-        switch (what) {
-            case 1: {
-                new AddonListRenderer(new ModrinthImpl(), mcVersion, directory).startLoop();
-            }
-        }
+        return serverType;
     }
 }
