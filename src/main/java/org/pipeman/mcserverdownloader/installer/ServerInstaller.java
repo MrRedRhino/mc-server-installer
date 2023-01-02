@@ -39,7 +39,7 @@ public class ServerInstaller {
             settings.startScriptContent = "cd \"${0%/*}\"\n";
             System.out.print("Start.sh: Enter the command to start your Java VM (Leave empty to use 'java'): ");
             String line = TerminalUtil.readLine();
-            settings.startScriptContent += (line == null || line.isEmpty() ? "java" : line) + " ";
+            settings.startScriptContent += (line.isEmpty() ? "java" : line) + " ";
 
             if (serverType != ServerType.VELOCITY) {
                 System.out.print("Start.sh: Should the server start without a gui? (y/n) ");

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -12,26 +11,25 @@ import static java.lang.System.in;
 
 public class TerminalUtil {
     public static String readLine() {
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         try {
             return reader.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return "";
     }
 
     public static boolean readYesNo() {
         while (true) {
             String l = readLine();
-            if (l == null) continue;
 
             if (l.equalsIgnoreCase("y")) {
                 return true;
             } else if (l.equalsIgnoreCase("n")) {
                 return false;
             }
+            System.out.print("> ");
         }
     }
 
@@ -59,7 +57,6 @@ public class TerminalUtil {
         while (true) {
             System.out.print("> ");
             String l = readLine();
-            if (l == null) continue;
 
             try {
                 return Integer.parseInt(l);
@@ -68,27 +65,15 @@ public class TerminalUtil {
         }
     }
 
-    public static File readJavaPath() throws IOException, InterruptedException {
-        String input = readLine();
-        if (input != null) {
-            File file = Paths.get(input).toAbsolutePath().toFile();
-            ProcessBuilder pBuilder = new ProcessBuilder(file.toString(), "-version");
-            Process p = pBuilder.start();
-            p.waitFor();
-            System.out.println(p.exitValue());
-        }
-        return null;
-    }
-
     public static String getInstallDir(String what) {
         String out = "";
         boolean isCorrect = false;
         while (!isCorrect) {
             System.out.print("Enter the directory to install the " + what + " in.\n" +
-                    "Leave empty to use the directory this program runs in.\n> ");
+                             "Leave empty to use the directory this program runs in.\n> ");
 
             String line = readLine();
-            if (line == null || line.isEmpty() || line.equals(".")) {
+            if (line.isEmpty() || line.equals(".")) {
                 line = System.getProperty("user.dir");
             }
 
