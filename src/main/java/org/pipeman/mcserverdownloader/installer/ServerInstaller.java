@@ -28,9 +28,6 @@ public class ServerInstaller {
         System.out.print("                                   \r");
         settings.version = versions.get(TerminalUtil.readRange(versions) - 1);
 
-//        settings.installDirectory = TerminalUtil.getInstallDir(serverType == ServerType.VELOCITY ? "proxy" : "server");
-//        settings.installDirectory = System.getProperty("user.dir");
-
         if (serverType != ServerType.VELOCITY) {
             System.out.println("Do you agree to Mojang's eula? (https://account.mojang.com/documents/minecraft_eula)");
             System.out.print("If not, you will have to agree after the first launch of the server. (y/n) ");
@@ -47,23 +44,22 @@ public class ServerInstaller {
             if (serverType != ServerType.VELOCITY) {
                 System.out.print("Start.sh: Should the server start without a gui? (y/n) ");
                 settings.noGui = TerminalUtil.readYesNo();
-
-                // how much ram? use aikar?
-                System.out.println("Start.sh: How much RAM should be allocated to your server in MB (e.g. 2048 (2GB), 4096 (4GB))? ");
-                int ram = TerminalUtil.readInt();
-                boolean aikarFlags = false;
-                if (AikarFlags.isSupportedBy(serverType)) {
-                    System.out.print("Start.sh: Use Aikar flags? (y/n)");
-                    if (TerminalUtil.readYesNo()) aikarFlags = true;
-                }
-                if (aikarFlags) settings.startScriptContent += AikarFlags.createFlags(ram);
-                else settings.startScriptContent += "-Xms" + ram + "M -Xmx" + ram + "M";
             }
+
+            // how much ram? use aikar?
+            System.out.println("Start.sh: How much RAM should be allocated to your server in MB (e.g. 2048 (2GB), 4096 (4GB))? ");
+            int ram = TerminalUtil.readInt();
+            boolean aikarFlags = false;
+            if (AikarFlags.isSupportedBy(serverType)) {
+                System.out.print("Start.sh: Use Aikar flags? (y/n) ");
+                if (TerminalUtil.readYesNo()) aikarFlags = true;
+            }
+            if (aikarFlags) settings.startScriptContent += AikarFlags.createFlags(ram);
+            else settings.startScriptContent += "-Xms" + ram + "M -Xmx" + ram + "M";
+
 
             settings.startScriptContent += " -jar ";
         }
-
-        // TODO velocity and normal server settings
 
         System.out.println(settings.generateSummary(serverType));
         System.out.print("Install? (y/n) ");
@@ -76,9 +72,7 @@ public class ServerInstaller {
                 System.out.println();
 
                 // create eula file
-                if (settings.eula) {
-                    Files.makeFile("eula.txt", "eula=true");
-                }
+                if (settings.eula) Files.makeFile("eula.txt", "eula=true");
 
                 // generate start script
                 if (settings.startScriptContent != null) {
