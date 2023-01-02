@@ -46,7 +46,6 @@ public class ServerInstaller {
                 settings.noGui = TerminalUtil.readYesNo();
             }
 
-            // how much ram? use aikar?
             System.out.println("Start.sh: How much RAM should be allocated to your server in MB (e.g. 2048 (2GB), 4096 (4GB))? ");
             int ram = TerminalUtil.readInt();
             boolean aikarFlags = false;
