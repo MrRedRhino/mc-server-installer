@@ -39,13 +39,26 @@ public class ServerInstaller {
             settings.startScriptContent = "cd \"${0%/*}\"\n";
             System.out.print("Start.sh: Enter the command to start your Java VM (Leave empty to use 'java'): ");
             String line = TerminalUtil.readLine();
-            settings.startScriptContent += (line == null || line.isEmpty() ? "java" : line) + " -jar ";
+            settings.startScriptContent += (line == null || line.isEmpty() ? "java" : line) + " ";
 
             // TODO Fancy RAM options
             if (serverType != ServerType.VELOCITY) {
-                System.out.print("Start.sh: Should the server start headless? (y/n) ");
+                System.out.print("Start.sh: Should the server start without a gui? (y/n) ");
                 settings.noGui = TerminalUtil.readYesNo();
+
+                // how much ram? use aikar?
+                System.out.println("Start.sh: How much RAM should be allocated to your server in MB (e.g. 2048 (2GB), 4096 (4GB))? ");
+                int ram = TerminalUtil.readInt();
+                boolean aikarFlags = false;
+                if (AikarFlags.isSupportedBy(serverType)) {
+                    System.out.print("Start.sh: Use Aikar flags? (y/n)");
+                    if (TerminalUtil.readYesNo()) aikarFlags = true;
+                }
+                if (aikarFlags) settings.startScriptContent += AikarFlags.createFlags(ram);
+                else settings.startScriptContent += "-Xms" + ram + "M -Xmx" + ram + "M";
             }
+
+            settings.startScriptContent += " -jar ";
         }
 
         // TODO velocity and normal server settings
