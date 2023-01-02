@@ -50,7 +50,7 @@ public class TerminalUtil {
         return readRange(1, a.size());
     }
 
-    public static void printList(List<?> a, Consumer<Object> print) {
+    public static <T> void printList(List<T> a, Consumer<T> print) {
         for (int i = 0; i < a.size(); i++) {
             System.out.print("  " + (i + 1) + ": ");
             print.accept(a.get(i));
