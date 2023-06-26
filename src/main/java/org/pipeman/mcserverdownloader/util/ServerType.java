@@ -3,9 +3,7 @@ package org.pipeman.mcserverdownloader.util;
 
 public enum ServerType {
     FABRIC("fabric_server.jar", "mods"),
-    FORGE("", "mods"),
     PAPER("paper.jar", "plugins"),
-    PUFFERFISH("", "plugins"),
     PURPUR("purpur.jar", "plugins"),
     VANILLA("server.jar", "plugins"),
     VELOCITY("velocity.jar", "plugins");

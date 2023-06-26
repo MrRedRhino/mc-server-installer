@@ -8,6 +8,7 @@ import org.pipeman.mcserverdownloader.util.api.Requests;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class VanillaAPI implements IApi {
@@ -33,6 +34,7 @@ public class VanillaAPI implements IApi {
                 }
             }
 
+            Collections.sort(out);
             return out;
         } catch (Exception e) {
             throw new RuntimeException(e);

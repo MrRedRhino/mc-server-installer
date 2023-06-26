@@ -7,10 +7,11 @@ public class InstallerSettings {
     public String startScriptContent;
     public boolean noGui;
     public String version;
+    public String installationDirectory;
 
     public String generateSummary(ServerType serverType) {
         String out = "==== This program will: ====";
-        out += "\n  - Download " + serverType + " (" + version + ") into: " + System.getProperty("user.dir");
+        out += "\n  - Download " + serverType + " (" + version + ") into: " + installationDirectory;
         if (eula) out += "\n  - Automatically agree to Mojang's eula";
         if (startScriptContent != null) {
             out += "\n  - Create a start-script";

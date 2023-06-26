@@ -28,7 +28,7 @@ public interface IApi {
                 return new VelocityAPI();
             }
             default: {
-                return null;
+                throw new RuntimeException("Invalid server type");
             }
         }
     }

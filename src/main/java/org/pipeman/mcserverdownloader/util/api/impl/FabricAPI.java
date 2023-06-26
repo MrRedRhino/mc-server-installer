@@ -8,6 +8,7 @@ import org.pipeman.mcserverdownloader.util.api.Requests;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class FabricAPI implements IApi {
 
@@ -23,6 +24,7 @@ public class FabricAPI implements IApi {
                 }
             }
 
+            Collections.sort(out);
             return out;
         } catch (Exception e) {
             throw new RuntimeException(e);

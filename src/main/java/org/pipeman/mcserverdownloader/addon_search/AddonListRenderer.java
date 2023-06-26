@@ -45,7 +45,7 @@ public class AddonListRenderer {
 
                     System.out.println("Versions for " + selectedAddon.name() + ". Choose a version to download or " +
                                        "enter a new search query.");
-                    TerminalUtil.printList(versions, o -> System.out.println(((DownloadInfo) o).title()));
+                    TerminalUtil.printList(versions, o -> System.out.println(o.title()));
                     System.out.print("> ");
 
                     while (true) {
@@ -80,7 +80,7 @@ public class AddonListRenderer {
     }
 
     private boolean exit() {
-        if (toInstall.size() == 0) return true;
+        if (toInstall.isEmpty()) return true;
 
         System.out.print("You are about to exit the addon installer but you selected " + toInstall.size() + " " +
                            "addons.\nExit and discard them? (y/n) > ");
@@ -88,7 +88,7 @@ public class AddonListRenderer {
             return true;
         } else {
             System.out.println("You selected these addons: ");
-            TerminalUtil.printList(toInstall, o -> System.out.println(((DownloadInfo) o).title()));
+            TerminalUtil.printList(toInstall, o -> System.out.println(o.title()));
             System.out.print("Install? (y/n) > ");
             if (TerminalUtil.readYesNo()) {
                 for (DownloadInfo info : toInstall) {
@@ -108,7 +108,7 @@ public class AddonListRenderer {
 
     public void searchAndDraw(String query, String mcVersion) throws IOException {
         List<IAddon> addons = search.search(query, mcVersion);
-        if (addons.size() == 0) System.out.println(Colors.BOLD + "Nothing found." + Colors.RESET);
+        if (addons.isEmpty()) System.out.println(Colors.BOLD + "Nothing found." + Colors.RESET);
         else {
             for (int i = 0; i < addons.size(); i++) {
                 drawAddon(i + 1, addons.get(i));

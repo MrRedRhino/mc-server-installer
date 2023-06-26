@@ -1,9 +1,12 @@
 package org.pipeman.mcserverdownloader.util;
 
+import org.pipeman.mcserverdownloader.questions.LineEmptyException;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -11,9 +14,15 @@ import static java.lang.System.in;
 
 public class TerminalUtil {
     public static String readLine() {
+        return readLine(false);
+    }
+
+    public static String readLine(boolean reportEmptiness) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         try {
-            return reader.readLine();
+            String line = reader.readLine();
+            if (reportEmptiness && line.isEmpty()) throw new LineEmptyException();
+            return line;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -33,7 +42,7 @@ public class TerminalUtil {
         }
     }
 
-    public static int readRange(int lower, int upper) {
+    public static int readChoice(int lower, int upper) {
         int sel = 0;
         while (sel < lower || sel > upper) {
             sel = TerminalUtil.readInt();
@@ -41,15 +50,26 @@ public class TerminalUtil {
         return sel;
     }
 
-    public static int readRange(List<String> a) {
-        printList(a, System.out::println);
-        return readRange(1, a.size());
+    public static int readChoice(List<String> list) {
+        printList(list, System.out::println);
+        return readChoice(1, list.size());
+    }
+
+    public static int readChoice(String... choices) {
+        return readChoice(Arrays.asList(choices));
     }
 
     public static <T> void printList(List<T> a, Consumer<T> print) {
         for (int i = 0; i < a.size(); i++) {
             System.out.print("  " + (i + 1) + ": ");
             print.accept(a.get(i));
+        }
+    }
+
+    public static <T> void printList(T[] a, Consumer<T> print) {
+        for (int i = 0; i < a.length; i++) {
+            System.out.print("  " + (i + 1) + ": ");
+            print.accept(a[i]);
         }
     }
 

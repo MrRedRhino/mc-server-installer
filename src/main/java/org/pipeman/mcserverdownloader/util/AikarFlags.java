@@ -14,6 +14,6 @@ public class AikarFlags {
     }
 
     public static boolean isSupportedBy(ServerType serverType) {
-        return serverType != ServerType.FABRIC && serverType != ServerType.FORGE;
+        return serverType != ServerType.FABRIC;
     }
 }
